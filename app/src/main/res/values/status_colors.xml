@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="status_safe">#4CAF50</color>
+    <color name="status_suspicious">#FF9800</color>
+    <color name="status_dangerous">#F44336</color>
+</resources>
+
