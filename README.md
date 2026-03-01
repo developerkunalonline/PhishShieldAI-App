@@ -28,10 +28,10 @@
 | <img src="screenshots/1.jpeg" width="220" alt="Splash Screen"/> | <img src="screenshots/2.jpeg" width="220" alt="Login Screen"/> | <img src="screenshots/3.jpeg" width="220" alt="Dashboard"/> |
 | *App launch with animated shield logo and gradient branding* | *Glassmorphic login card with gradient button* | *Live threat history with risk badges & progress ring* |
 
-| Phishing Quiz | Quiz Results |
-|:---:|:---:|
-| <img src="screenshots/4.jpeg" width="220" alt="Phishing Quiz"/> | <img src="screenshots/5.jpeg" width="220" alt="Quiz Results"/> |
-| *AI-generated quiz questions with explain feature* | *Score card with wrong answer review & explanations* |
+| Phishing Quiz | Quiz Results | Link Detection |
+|:---:|:---:|:---:|
+| <img src="screenshots/4.jpeg" width="220" alt="Phishing Quiz"/> | <img src="screenshots/5.jpeg" width="220" alt="Quiz Results"/> | <img src="screenshots/6.jpeg" width="220" alt="Link Detection"/> |
+| *AI-generated quiz questions with explain feature* | *Score card with wrong answer review & explanations* | *100% dangerous verdict with circular risk indicator* |
 
 </div>
 
@@ -139,7 +139,8 @@ PhishShieldAI-App/
 │   ├── 2.jpeg   # Login Screen
 │   ├── 3.jpeg   # Dashboard
 │   ├── 4.jpeg   # Phishing Quiz
-│   └── 5.jpeg   # Quiz Results
+│   ├── 5.jpeg   # Quiz Results
+│   └── 6.jpeg   # Link Detection (Phishing Verdict)
 └── README.md
 ```
 
