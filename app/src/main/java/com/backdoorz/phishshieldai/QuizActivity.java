@@ -6,11 +6,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
@@ -28,7 +27,6 @@ public class QuizActivity extends AppCompatActivity {
     private RecyclerView questionsRecyclerView;
     private MaterialButton submitButton;
     private PrefsManager prefsManager;
-    private static final String QUIZ_URL = "https://phishshield-backend-15e6.onrender.com/quiz";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +47,10 @@ public class QuizActivity extends AppCompatActivity {
         questionsRecyclerView.setVisibility(View.GONE);
         submitButton.setVisibility(View.GONE);
         loadingProgressBar.setVisibility(View.VISIBLE);
+
+        // Apply gradient background to submit button
+        submitButton.setBackgroundTintList(null);
+        submitButton.setBackground(ContextCompat.getDrawable(this, R.drawable.button_gradient));
 
         // Setup RecyclerView
         quizAdapter = new QuizAdapter(questions, selectedAnswers, this::updateAnswer);
@@ -74,56 +76,55 @@ public class QuizActivity extends AppCompatActivity {
 
     private void fetchQuestions() {
         JsonObjectRequest request = new JsonObjectRequest(
-            Request.Method.GET,
-            QUIZ_URL,
-            null,
-            response -> {
-                try {
-                    // Clear any existing questions
-                    questions.clear();
-                    selectedAnswers.clear();
+                Request.Method.GET,
+                Constants.QUIZ_URL,
+                null,
+                response -> {
+                    try {
+                        // Clear any existing questions
+                        questions.clear();
+                        selectedAnswers.clear();
 
-                    // Iterate through the questions in the response
-                    for (int i = 0; response.has(String.valueOf(i)); i++) {
-                        JSONObject questionObj = response.getJSONObject(String.valueOf(i));
-                        String questionText = questionObj.getString("question");
-                        org.json.JSONArray optionsArray = questionObj.getJSONArray("options");
-                        String correctAnswer = questionObj.getString("answer");
-                        String explanation = questionObj.getString("explanation");
+                        // Iterate through the questions in the response
+                        for (int i = 0; response.has(String.valueOf(i)); i++) {
+                            JSONObject questionObj = response.getJSONObject(String.valueOf(i));
+                            String questionText = questionObj.getString("question");
+                            org.json.JSONArray optionsArray = questionObj.getJSONArray("options");
+                            String correctAnswer = questionObj.getString("answer");
+                            String explanation = questionObj.getString("explanation");
 
-                        // Convert options array to List
-                        List<String> options = new ArrayList<>();
-                        for (int j = 0; j < optionsArray.length(); j++) {
-                            options.add(optionsArray.getString(j));
+                            // Convert options array to List
+                            List<String> options = new ArrayList<>();
+                            for (int j = 0; j < optionsArray.length(); j++) {
+                                options.add(optionsArray.getString(j));
+                            }
+
+                            // Find correct answer index
+                            int correctIndex = options.indexOf(correctAnswer);
+
+                            // Add question
+                            questions.add(new QuizQuestion(questionText, options, correctIndex, explanation));
+                            selectedAnswers.add(-1);
                         }
 
-                        // Find correct answer index
-                        int correctIndex = options.indexOf(correctAnswer);
+                        // Create new adapter with updated data
+                        quizAdapter = new QuizAdapter(questions, selectedAnswers, this::updateAnswer);
+                        questionsRecyclerView.setAdapter(quizAdapter);
 
-                        // Add question
-                        questions.add(new QuizQuestion(questionText, options, correctIndex, explanation));
-                        selectedAnswers.add(-1);
+                        // Show questions and hide loading
+                        loadingProgressBar.setVisibility(View.GONE);
+                        questionsRecyclerView.setVisibility(View.VISIBLE);
+                        submitButton.setVisibility(View.VISIBLE);
+
+                        Toast.makeText(this, "Quiz loaded successfully", Toast.LENGTH_SHORT).show();
+
+                    } catch (Exception e) {
+                        handleError("Error parsing response: " + e.getMessage());
                     }
-
-                    // Create new adapter with updated data
-                    quizAdapter = new QuizAdapter(questions, selectedAnswers, this::updateAnswer);
-                    questionsRecyclerView.setAdapter(quizAdapter);
-
-                    // Show questions and hide loading
-                    loadingProgressBar.setVisibility(View.GONE);
-                    questionsRecyclerView.setVisibility(View.VISIBLE);
-                    submitButton.setVisibility(View.VISIBLE);
-
-                    Toast.makeText(this, "Quiz loaded successfully", Toast.LENGTH_SHORT).show();
-
-                } catch (Exception e) {
-                    handleError("Error parsing response: " + e.getMessage());
-                }
-            },
-            error -> handleError("Network error: " + error.getMessage())
-        ) {
+                },
+                error -> handleError("Network error: " + error.getMessage())) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 String token = prefsManager.getToken();
                 headers.put("Authorization", "Bearer " + token);

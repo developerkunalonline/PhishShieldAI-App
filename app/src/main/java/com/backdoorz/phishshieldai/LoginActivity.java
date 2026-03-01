@@ -7,15 +7,18 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import android.graphics.drawable.Drawable;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
@@ -23,7 +26,6 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
     private PrefsManager prefsManager;
-    private static final String LOGIN_URL = "https://phishshield-backend-15e6.onrender.com/users/login";
     private TextInputLayout emailLayout, passwordLayout;
     private MaterialButton loginButton;
 
@@ -51,13 +53,14 @@ public class LoginActivity extends AppCompatActivity {
         View forgotPasswordText = findViewById(R.id.forgotPasswordText);
         View signUpText = findViewById(R.id.signUpText);
 
-        // Apply gradient to welcome text
+        // Apply vibrant gradient to welcome text
         welcomeText.post(() -> {
             float width = welcomeText.getPaint().measureText(welcomeText.getText().toString());
             LinearGradient textShader = new LinearGradient(0, 0, width, 0,
-                    new int[]{
-                            ContextCompat.getColor(this, R.color.primary),
-                            ContextCompat.getColor(this, R.color.secondary)
+                    new int[] {
+                            ContextCompat.getColor(this, R.color.gradient_start),
+                            ContextCompat.getColor(this, R.color.gradient_mid),
+                            ContextCompat.getColor(this, R.color.gradient_end)
                     },
                     null, Shader.TileMode.CLAMP);
             welcomeText.getPaint().setShader(textShader);
@@ -66,12 +69,14 @@ public class LoginActivity extends AppCompatActivity {
 
         // Apply gradient to login button
         loginButton.setBackgroundTintList(null);
-        loginButton.setBackground(ContextCompat.getDrawable(this, R.drawable.button_gradient));
+        Drawable btnDrawable = ContextCompat.getDrawable(this, R.drawable.button_gradient);
+        if (btnDrawable != null)
+            loginButton.setBackground(btnDrawable);
 
         // Setup click listeners
         loginButton.setOnClickListener(v -> {
-            String email = emailInput.getText().toString().trim();
-            String password = passwordInput.getText().toString().trim();
+            String email = emailInput.getText() != null ? emailInput.getText().toString().trim() : "";
+            String password = passwordInput.getText() != null ? passwordInput.getText().toString().trim() : "";
 
             // Validate input
             if (TextUtils.isEmpty(email)) {
@@ -95,9 +100,8 @@ public class LoginActivity extends AppCompatActivity {
             performLogin(email, password);
         });
 
-        forgotPasswordText.setOnClickListener(v -> {
-            Toast.makeText(this, "Forgot password feature coming soon!", Toast.LENGTH_SHORT).show();
-        });
+        forgotPasswordText.setOnClickListener(
+                v -> Toast.makeText(this, "Forgot password feature coming soon!", Toast.LENGTH_SHORT).show());
 
         signUpText.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
@@ -117,50 +121,47 @@ public class LoginActivity extends AppCompatActivity {
 
             // Create request
             JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
-                LOGIN_URL,
-                jsonBody,
-                response -> {
-                    try {
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-                        JSONObject user = response.getJSONObject("user");
-
-                        // Save user data in SharedPreferences
-                        prefsManager.saveUserLoginState(
-                            true,
-                            token,
-                            user.getString("email"),
-                            user.getString("name"),
-                            user.getString("id")
-                        );
-
-                        // Navigate to MainActivity
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-
-                    } catch (JSONException e) {
-                        handleError("Error parsing response: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    String errorMessage = "Login failed";
-                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                    Request.Method.POST,
+                    Constants.LOGIN_URL,
+                    jsonBody,
+                    response -> {
                         try {
-                            String errorResponse = new String(error.networkResponse.data);
-                            JSONObject errorJson = new JSONObject(errorResponse);
-                            if (errorJson.has("message")) {
-                                errorMessage = errorJson.getString("message");
-                            }
-                        } catch (Exception e) {
-                            // Use default error message
+                            String token = response.getString("token");
+                            JSONObject user = response.getJSONObject("user");
+
+                            // Save user data in SharedPreferences
+                            prefsManager.saveUserLoginState(
+                                    true,
+                                    token,
+                                    user.getString("email"),
+                                    user.getString("name"),
+                                    user.getString("id"));
+
+                            // Navigate to MainActivity
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+
+                        } catch (JSONException e) {
+                            handleError("Error parsing response: " + e.getMessage());
                         }
-                    }
-                    handleError(errorMessage);
-                }
-            );
+                    },
+                    error -> {
+                        String errorMessage = "Login failed";
+                        if (error.networkResponse != null && error.networkResponse.data != null) {
+                            try {
+                                String errorResponse = new String(error.networkResponse.data);
+                                JSONObject errorJson = new JSONObject(errorResponse);
+                                if (errorJson.has("message")) {
+                                    errorMessage = errorJson.getString("message");
+                                }
+                            } catch (Exception e) {
+                                // Use default error message
+                            }
+                        }
+                        handleError(errorMessage);
+                    });
 
             // Add request to queue
             Volley.newRequestQueue(this).add(request);

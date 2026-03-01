@@ -1,9 +1,12 @@
 package com.backdoorz.phishshieldai;
 
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
@@ -60,11 +63,10 @@ public class ResultActivity extends AppCompatActivity {
             List<WrongAnswerAdapter.WrongAnswer> wrongAnswersList = new ArrayList<>();
             for (int i = 0; i < wrongQuestions.size(); i++) {
                 wrongAnswersList.add(new WrongAnswerAdapter.WrongAnswer(
-                    wrongQuestions.get(i),
-                    wrongAnswers.get(i),
-                    correctAnswers.get(i),
-                    explanations.get(i)
-                ));
+                        wrongQuestions.get(i),
+                        wrongAnswers.get(i),
+                        correctAnswers.get(i),
+                        explanations.get(i)));
             }
 
             WrongAnswerAdapter adapter = new WrongAnswerAdapter(wrongAnswersList);
@@ -75,6 +77,25 @@ public class ResultActivity extends AppCompatActivity {
             reviewTitle.setVisibility(View.GONE);
             wrongAnswersRecyclerView.setVisibility(View.GONE);
         }
+
+        // Apply gradient to finish button
+        finishButton.setBackgroundTintList(null);
+        finishButton.setBackground(ContextCompat.getDrawable(this, R.drawable.button_gradient));
+        finishButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+
+        // Apply gradient to score text
+        scoreText.post(() -> {
+            float width = scoreText.getPaint().measureText(scoreText.getText().toString());
+            LinearGradient textShader = new LinearGradient(0, 0, width, 0,
+                    new int[] {
+                            ContextCompat.getColor(this, R.color.gradient_start),
+                            ContextCompat.getColor(this, R.color.gradient_mid),
+                            ContextCompat.getColor(this, R.color.gradient_end)
+                    },
+                    null, Shader.TileMode.CLAMP);
+            scoreText.getPaint().setShader(textShader);
+            scoreText.invalidate();
+        });
 
         // Handle finish button click
         finishButton.setOnClickListener(v -> finish());

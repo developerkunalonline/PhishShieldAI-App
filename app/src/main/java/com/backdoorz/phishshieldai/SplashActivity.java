@@ -7,13 +7,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class SplashActivity extends AppCompatActivity {
-    private static final int SPLASH_DURATION = 2000; // 2 seconds
+    private static final int SPLASH_DURATION = 2500;
     private PrefsManager prefsManager;
 
     @Override
@@ -29,29 +31,33 @@ public class SplashActivity extends AppCompatActivity {
         TextView appName = findViewById(R.id.appName);
         TextView tagline = findViewById(R.id.tagline);
 
-        // Apply gradient to text
+        // Apply vibrant gradient to text
         appName.post(() -> {
             float width = appName.getPaint().measureText(appName.getText().toString());
             LinearGradient textShader = new LinearGradient(0, 0, width, 0,
-                    new int[]{
-                            ContextCompat.getColor(this, R.color.primary),
-                            ContextCompat.getColor(this, R.color.secondary)
+                    new int[] {
+                            ContextCompat.getColor(this, R.color.gradient_start),
+                            ContextCompat.getColor(this, R.color.gradient_mid),
+                            ContextCompat.getColor(this, R.color.gradient_end)
                     },
                     null, Shader.TileMode.CLAMP);
             appName.getPaint().setShader(textShader);
-            appName.invalidate(); // Refresh the text view
+            appName.invalidate();
         });
 
-        // Load animations
+        // Load animations with smoother timing
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         Animation fadeInDelayed = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
 
-        // Configure animation durations
-        fadeIn.setDuration(1000);
+        // Configure animation durations - smoother & more premium
+        fadeIn.setDuration(1200);
+        fadeIn.setInterpolator(new DecelerateInterpolator());
         slideUp.setDuration(1000);
-        fadeInDelayed.setDuration(800);
-        fadeInDelayed.setStartOffset(500);
+        slideUp.setInterpolator(new DecelerateInterpolator(1.5f));
+        fadeInDelayed.setDuration(900);
+        fadeInDelayed.setStartOffset(600);
+        fadeInDelayed.setInterpolator(new DecelerateInterpolator());
 
         // Start animations
         splashLogo.startAnimation(fadeIn);

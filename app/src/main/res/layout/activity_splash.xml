@@ -4,25 +4,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@drawable/splash_background">
+
+    <!-- Decorative glow orb top-right -->
+    <View
+        android:id="@+id/glowOrb1"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:alpha="0.15"
+        android:background="@drawable/circle_background"
+        android:translationX="60dp"
+        android:translationY="-40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Decorative glow orb bottom-left -->
+    <View
+        android:id="@+id/glowOrb2"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:alpha="0.1"
+        android:background="@drawable/circle_background"
+        android:translationX="-80dp"
+        android:translationY="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/splashLogo"
-        android:layout_width="347dp"
-        android:layout_height="414dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.35" />
 
     <LinearLayout
         android:id="@+id/titleContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,14 +60,15 @@
             android:fontFamily="sans-serif-medium"
             android:text="@string/app_name"
             android:textColor="@color/text_primary"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02" />
 
         <ImageView
             android:id="@+id/securityIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
             android:contentDescription="Security Icon"
             android:src="@drawable/ic_security" />
@@ -53,13 +78,24 @@
         android:id="@+id/tagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:text="Securing Your Digital World"
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:fontFamily="sans-serif-light"
+        android:letterSpacing="0.08"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleContainer" />
+
+    <!-- Subtle glass pill indicator at bottom -->
+    <View
+        android:layout_width="60dp"
+        android:layout_height="4dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/glass_divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

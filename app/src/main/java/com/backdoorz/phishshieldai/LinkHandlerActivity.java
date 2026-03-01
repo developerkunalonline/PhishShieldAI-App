@@ -4,16 +4,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.android.volley.AuthFailureError;
+import androidx.core.content.ContextCompat;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
@@ -34,7 +32,6 @@ public class LinkHandlerActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button openBrowserButton;
     private PrefsManager prefsManager;
-    private static final String PREDICTION_URL = "https://phishshield-backend-15e6.onrender.com/api/scan-url";
     private WebView webView;
     private MaterialCardView webViewContainer;
     private CircularProgressIndicator phishingChanceIndicator;
@@ -58,6 +55,11 @@ public class LinkHandlerActivity extends AppCompatActivity {
         phishingChanceIndicator = findViewById(R.id.phishingChanceIndicator);
         percentageText = findViewById(R.id.percentageText);
         statusText = findViewById(R.id.statusText);
+
+        // Apply gradient button styling
+        com.google.android.material.button.MaterialButton browserBtn = findViewById(R.id.openBrowserButton);
+        browserBtn.setBackgroundTintList(null);
+        browserBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.button_gradient));
 
         // Setup WebView
         setupWebView();
@@ -119,12 +121,13 @@ public class LinkHandlerActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(LinkHandlerActivity.this,
-                    "Error loading page: " + error.getDescription(),
-                    Toast.LENGTH_SHORT).show();
+                        "Error loading page: " + error.getDescription(),
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler handler, android.net.http.SslError error) {
+            public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler handler,
+                    android.net.http.SslError error) {
                 // Ignore SSL errors for preview (not recommended for production)
                 handler.proceed();
             }
@@ -151,67 +154,70 @@ public class LinkHandlerActivity extends AppCompatActivity {
             jsonBody.put("url", currentUrl);
 
             JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
-                PREDICTION_URL,
-                jsonBody,
-                response -> {
-                    progressBar.setVisibility(View.GONE);
-                    resultText.setVisibility(View.VISIBLE);
-                    try {
-                        // Display full response in status text
-                         // Using indent of 2 for better readability
+                    Request.Method.POST,
+                    Constants.PREDICTION_URL,
+                    jsonBody,
+                    response -> {
+                        progressBar.setVisibility(View.GONE);
+                        resultText.setVisibility(View.VISIBLE);
+                        try {
+                            // Display full response in status text
+                            // Using indent of 2 for better readability
 
-                        // Parse response
-                        double phishingChance = response.getDouble("phishing_chance");
-                        String status = response.getString("status");
-                        String reason = response.getString("reason");
+                            // Parse response
+                            double phishingChance = response.getDouble("phishing_chance");
+                            String status = response.getString("status");
+                            String reason = response.getString("reason");
 
-                        // Update UI
-                        int progressValue = (int) phishingChance;
-                        phishingChanceIndicator.setProgress(progressValue);
-                        percentageText.setText(progressValue + "%");
-                        resultText.setText(reason);
-                        statusText.setText(status);
+                            // Update UI
+                            int progressValue = (int) phishingChance;
+                            phishingChanceIndicator.setProgress(progressValue);
+                            percentageText.setText(progressValue + "%");
+                            resultText.setText(reason);
+                            statusText.setText(status);
 
-                        // Update colors based on risk level
-                        int colorRes;
-                        if (phishingChance < 30) {
-                            colorRes = android.R.color.holo_green_light;
-                            statusText.setTextColor(getResources().getColor(android.R.color.holo_green_dark, null));
-                            percentageText.setTextColor(getResources().getColor(android.R.color.holo_green_dark, null));
-                            openInBrowser();
-                        } else if (phishingChance < 70) {
-                            colorRes = android.R.color.holo_orange_light;
-                            statusText.setTextColor(getResources().getColor(android.R.color.holo_orange_dark, null));
-                            percentageText.setTextColor(getResources().getColor(android.R.color.holo_orange_dark, null));
-                        } else {
-                            colorRes = android.R.color.holo_red_light;
-                            statusText.setTextColor(getResources().getColor(android.R.color.holo_red_dark, null));
-                            percentageText.setTextColor(getResources().getColor(android.R.color.holo_red_dark, null));
+                            // Update colors based on risk level
+                            int colorRes;
+                            if (phishingChance < 30) {
+                                colorRes = android.R.color.holo_green_light;
+                                statusText.setTextColor(getResources().getColor(android.R.color.holo_green_dark, null));
+                                percentageText
+                                        .setTextColor(getResources().getColor(android.R.color.holo_green_dark, null));
+                                openInBrowser();
+                            } else if (phishingChance < 70) {
+                                colorRes = android.R.color.holo_orange_light;
+                                statusText
+                                        .setTextColor(getResources().getColor(android.R.color.holo_orange_dark, null));
+                                percentageText
+                                        .setTextColor(getResources().getColor(android.R.color.holo_orange_dark, null));
+                            } else {
+                                colorRes = android.R.color.holo_red_light;
+                                statusText.setTextColor(getResources().getColor(android.R.color.holo_red_dark, null));
+                                percentageText
+                                        .setTextColor(getResources().getColor(android.R.color.holo_red_dark, null));
+                            }
+                            phishingChanceIndicator.setIndicatorColor(getResources().getColor(colorRes, null));
+
+                            // Handle WebView visibility
+                            if ("Safe".equalsIgnoreCase(status)) {
+                                openBrowserButton.setText(R.string.open_in_browser);
+                                webViewContainer.setVisibility(View.VISIBLE);
+                                webView.setVisibility(View.VISIBLE);
+                                webView.loadUrl(currentUrl);
+                            } else {
+                                openBrowserButton.setText("Open Anyway (Not Recommended)");
+                                webViewContainer.setVisibility(View.GONE);
+                                webView.setVisibility(View.GONE);
+                            }
+
+                            openBrowserButton.setVisibility(View.VISIBLE);
+                        } catch (JSONException e) {
+                            handleError("Error parsing response: " + e.getMessage());
                         }
-                        phishingChanceIndicator.setIndicatorColor(getResources().getColor(colorRes, null));
-
-                        // Handle WebView visibility
-                        if ("Safe".equalsIgnoreCase(status)) {
-                            openBrowserButton.setText(R.string.open_in_browser);
-                            webViewContainer.setVisibility(View.VISIBLE);
-                            webView.setVisibility(View.VISIBLE);
-                            webView.loadUrl(currentUrl);
-                        } else {
-                            openBrowserButton.setText("Open Anyway (Not Recommended)");
-                            webViewContainer.setVisibility(View.GONE);
-                            webView.setVisibility(View.GONE);
-                        }
-
-                        openBrowserButton.setVisibility(View.VISIBLE);
-                    } catch (JSONException e) {
-                        handleError("Error parsing response: " + e.getMessage());
-                    }
-                },
-                error -> handleError("Network error: " + error.getMessage())
-            ) {
+                    },
+                    error -> handleError("Network error: " + error.getMessage())) {
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
+                public Map<String, String> getHeaders() {
                     Map<String, String> headers = new HashMap<>();
                     String token = prefsManager.getToken();
                     headers.put("Authorization", "Bearer " + token);

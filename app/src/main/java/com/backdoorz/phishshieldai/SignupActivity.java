@@ -39,9 +39,10 @@ public class SignupActivity extends AppCompatActivity {
         titleText.post(() -> {
             float width = titleText.getPaint().measureText(titleText.getText().toString());
             LinearGradient textShader = new LinearGradient(0, 0, width, 0,
-                    new int[]{
-                            ContextCompat.getColor(this, R.color.primary),
-                            ContextCompat.getColor(this, R.color.secondary)
+                    new int[] {
+                            ContextCompat.getColor(this, R.color.gradient_start),
+                            ContextCompat.getColor(this, R.color.gradient_mid),
+                            ContextCompat.getColor(this, R.color.gradient_end)
                     },
                     null, Shader.TileMode.CLAMP);
             titleText.getPaint().setShader(textShader);
@@ -54,17 +55,15 @@ public class SignupActivity extends AppCompatActivity {
 
         // Setup click listener
         signupButton.setOnClickListener(v -> attemptSignup(
-            nameLayout, emailLayout, phoneLayout, passwordLayout,
-            nameInput, emailInput, phoneInput, passwordInput
-        ));
+                nameLayout, emailLayout, phoneLayout, passwordLayout,
+                nameInput, emailInput, phoneInput, passwordInput));
     }
 
     private void attemptSignup(
-        TextInputLayout nameLayout, TextInputLayout emailLayout,
-        TextInputLayout phoneLayout, TextInputLayout passwordLayout,
-        TextInputEditText nameInput, TextInputEditText emailInput,
-        TextInputEditText phoneInput, TextInputEditText passwordInput
-    ) {
+            TextInputLayout nameLayout, TextInputLayout emailLayout,
+            TextInputLayout phoneLayout, TextInputLayout passwordLayout,
+            TextInputEditText nameInput, TextInputEditText emailInput,
+            TextInputEditText phoneInput, TextInputEditText passwordInput) {
         // Reset errors
         nameLayout.setError(null);
         emailLayout.setError(null);

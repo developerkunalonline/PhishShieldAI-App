@@ -4,7 +4,7 @@
         <shape android:shape="ring"
             android:thicknessRatio="16"
             android:useLevel="false">
-            <solid android:color="#E0E0E0"/>
+            <solid android:color="#1AFFFFFF"/>
         </shape>
     </item>
     <item>
@@ -14,8 +14,9 @@
             <gradient
                 android:type="linear"
                 android:angle="0"
-                android:startColor="@color/primary"
-                android:endColor="@color/secondary" />
+                android:startColor="#6C63FF"
+                android:centerColor="#B24BF3"
+                android:endColor="#00E5FF" />
         </shape>
     </item>
 </layer-list>

@@ -3,24 +3,64 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Theme colors -->
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_variant">#1565C0</color>
-    <color name="secondary">#03DAC5</color>
-    <color name="secondary_variant">#018786</color>
+    <!-- Theme colors - Vibrant Cyber Palette -->
+    <color name="primary">#6C63FF</color>
+    <color name="primary_dark">#4A42D4</color>
+    <color name="primary_variant">#3D35B0</color>
+    <color name="secondary">#00E5FF</color>
+    <color name="secondary_variant">#00B8D4</color>
+
+    <!-- Accent colors -->
+    <color name="accent_cyan">#00E5FF</color>
+    <color name="accent_magenta">#FF2D7B</color>
+    <color name="accent_purple">#B24BF3</color>
+    <color name="accent_blue">#4DAAFC</color>
+    <color name="accent_green">#00E676</color>
+
+    <!-- Background colors - Deep Dark -->
+    <color name="bg_dark_start">#0A0E27</color>
+    <color name="bg_dark_mid">#0F1538</color>
+    <color name="bg_dark_end">#141B4D</color>
+    <color name="bg_surface">#1A1F45</color>
+
+    <!-- Glass colors -->
+    <color name="glass_bg">#1AFFFFFF</color>
+    <color name="glass_bg_light">#26FFFFFF</color>
+    <color name="glass_bg_medium">#33FFFFFF</color>
+    <color name="glass_stroke">#33FFFFFF</color>
+    <color name="glass_stroke_light">#1AFFFFFF</color>
+    <color name="glass_highlight">#0DFFFFFF</color>
 
     <!-- Text colors -->
-    <color name="text_primary">#DE000000</color>
-    <color name="text_secondary">#99000000</color>
+    <color name="text_primary">#F0F0FF</color>
+    <color name="text_secondary">#99A3CC</color>
+    <color name="text_accent">#00E5FF</color>
 
     <!-- Additional colors -->
-    <color name="background">#FFFFFF</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="error">#B00020</color>
+    <color name="background">#0A0E27</color>
+    <color name="surface">#1A1F45</color>
+    <color name="error">#FF5252</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="on_secondary">#000000</color>
-    <color name="on_background">#000000</color>
-    <color name="on_surface">#000000</color>
+    <color name="on_background">#F0F0FF</color>
+    <color name="on_surface">#F0F0FF</color>
     <color name="on_error">#FFFFFF</color>
+
+    <!-- Gradient colors for programmatic use -->
+    <color name="gradient_start">#6C63FF</color>
+    <color name="gradient_mid">#B24BF3</color>
+    <color name="gradient_end">#00E5FF</color>
+
+    <!-- Card inner glow -->
+    <color name="card_glow_purple">#1A6C63FF</color>
+    <color name="card_glow_cyan">#1A00E5FF</color>
+
+    <!-- FAB colors -->
+    <color name="fab_chat">#6C63FF</color>
+    <color name="fab_quiz">#00E5FF</color>
+
+    <!-- Input field colors -->
+    <color name="input_stroke">#4D6C63FF</color>
+    <color name="input_stroke_focused">#6C63FF</color>
+    <color name="input_bg">#1A6C63FF</color>
 </resources>
